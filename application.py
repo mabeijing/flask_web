@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 class Application(Flask):
     def __init__(self, name):
-        super().__init__(import_name=name)
+        super().__init__(import_name=name, template_folder="web/html")
         self.config.from_pyfile('config/base_setting.py')
         db.init_app(self)
 

@@ -1,7 +1,7 @@
 from application import app
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 
 """
 *400* `Bad Request`
@@ -41,13 +41,21 @@ def errors_handle(error):
         response = {
             'err_code': 10500,
             'msg': 'Internal Server Error',
-            'data': {},
+            'data': {'hi': '代码出bug咯'},
         }
         return jsonify(response), 500
 
     if isinstance(error, NotFound):
         response = {
             'err_code': 10404,
+            'msg': error.description,
+            'data': {},
+        }
+        return jsonify(response), error.code
+
+    if isinstance(error, MethodNotAllowed):
+        response = {
+            'err_code': 10405,
             'msg': error.description,
             'data': {},
         }

@@ -1,15 +1,17 @@
 from application import app
+from flask import Response, render_template
+import libs.exceptions
 import www
 
 
 @app.route('/', methods=['GET'])
 def index():
-    return 'version: v1.0 ~'
-
-
-@app.errorhandler(404)
-def not_found(error):
-    return 'page not found', 404
+    """
+    预留测试错误
+    :return:
+    """
+    # 1 / 0
+    return render_template('index.html')
 
 
 if __name__ == '__main__':

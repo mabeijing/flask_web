@@ -1,4 +1,4 @@
-SQLALCHEMY_DATABASE_URI = 'mysql://root:Root#123@192.168.8.222:3306/mms_db'
+SQLALCHEMY_DATABASE_URI = 'mysql://root:Root#123@127.0.0.1:3306/mms_db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # JSON格式返回支持中文

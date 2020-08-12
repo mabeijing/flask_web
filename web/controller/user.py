@@ -2,7 +2,6 @@
 from application import db
 from flask import Blueprint, request, escape
 from models.User import User
-from libs.exceptions import errors_handle
 from validation.user_validator import UserValidate, PasswordValidate
 
 user = Blueprint('user', __name__)
@@ -11,14 +10,17 @@ user = Blueprint('user', __name__)
 @user.route('/login', methods=["GET", "POST"])
 def user_login():
     """
-    获取客户端发送header数据
-    header = request.headers['key']
+    request.args 获取url?id=1&name='马北京'全部参数
+    request.args.get(key) 获取指定key参数
 
-    获取客户端json提交数据。
-    data_json = request.json
+    request.form 获取表单x-www-form-urlencoded全部参数值
+    request.form[key] 获取指定key参数
+    user_name = request.form.get('username', default=None)
+
+    request.get_data() 获取表单x-www-form-urlencoded的二进制值
     :return:
     """
-    name = request.form.get('name', default=None)
+    name = request.form.get('username', default=None) or request.args.get('username', default=None)
     if not name:
         return {'err_code': '204',
                 'msg': 'name是必填字段',
@@ -33,7 +35,7 @@ def user_login():
                 'msg': name + '用户未注册',
                 'data': {}
                 }, 200
-    password = request.form.get('password', default=None)
+    password = request.form.get('password', default=None) or request.args.get('password', default=None)
     if not password:
         return {'code': '204',
                 'msg': 'password是必填字段',
@@ -57,18 +59,6 @@ def user_login():
 
 @user.route('/register', methods=['POST'])
 def register_member():
-    """
-    request.args 获取url?id=1&name='马北京'全部参数
-    request.args.get(key) 获取指定key参数
-
-    request.form 获取表单x-www-form-urlencoded全部参数值
-    request.form[key] 获取指定key参数
-    user_name = request.form.get('username', default=None)
-
-    request.get_data() 获取表单x-www-form-urlencoded的二进制值
-    :return:
-    """
-
     form = UserValidate(request.form)
     pass_form = PasswordValidate(request.form)
     if not form.validate():
@@ -93,7 +83,8 @@ def register_member():
         return {'err_code': '202',
                 'msg': '已注册用户',
                 'data': {
-                    'username': escape(result.username),
+                    # 'username': escape(result.username),
+                    'username': result.username,
                     'password': result.password},
                 }, 200
     else:
