@@ -9,7 +9,7 @@ class BaseValidator(Form):
 
     def return_data(self):
         return {
-            'err_code': self.ERR_CODE,
-            'msg': self.MSG,
-            'data': self.DATA
+                   'err_code': self.ERR_CODE,
+                   'msg': self.MSG,
+                   'data': self.DATA
                }, self.CODE

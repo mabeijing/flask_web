@@ -18,7 +18,7 @@ class UserValidate(BaseValidator):
     username = StringField(label='用户名', validators=[
         DataRequired(message='username字段是必填字段'),
         Length(min=4, max=10, message='username长度必须在4-10之间'),
-        validate_username], id=1002, render_kw={'aaa': '111'})
+        validate_username])
 
 
 class PasswordValidate(BaseValidator):
