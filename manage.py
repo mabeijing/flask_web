@@ -1,12 +1,5 @@
 from application import app
-
-# from pyflask.controller.user import user
-# from pyflask.controller.good import good
-# from pyflask.controller.automatic import auto
-
-# app.register_blueprint(user, url_prefix='/user')
-# app.register_blueprint(good, url_prefix='/good')
-# app.register_blueprint(auto, url_prefix='/auto')
+import www
 
 
 @app.route('/', methods=['GET'])
