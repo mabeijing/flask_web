@@ -10,7 +10,7 @@ user = Blueprint('user', __name__)
 @user.route('/login', methods=["GET", "POST"])
 def user_login():
     """
-    request.args 获取url?id=1&name='马北京'全部参数
+    request.args 获取url?name='beijing'&password='123456'全部参数
     request.args.get(key) 获取指定key参数
 
     request.form 获取表单x-www-form-urlencoded全部参数值
@@ -20,7 +20,12 @@ def user_login():
     request.get_data() 获取表单x-www-form-urlencoded的二进制值
     :return:
     """
-    name = request.form.get('username', default=None) or request.args.get('username', default=None)
+    print(request.headers['Content-Type'])
+    raw_data = eval(request.get_data().decode('utf-8'))
+    print(raw_data)
+    username = raw_data.get('username')
+    print(username)
+    name = request.form.get('username', default=None) or request.args.get('username', default=None) or raw_data.get('username')
     if not name:
         return {'err_code': '204',
                 'msg': 'name是必填字段',
@@ -35,7 +40,7 @@ def user_login():
                 'msg': name + '用户未注册',
                 'data': {}
                 }, 200
-    password = request.form.get('password', default=None) or request.args.get('password', default=None)
+    password = request.form.get('password', default=None) or request.args.get('password', default=None) or raw_data.get('password')
     if not password:
         return {'code': '204',
                 'msg': 'password是必填字段',
