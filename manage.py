@@ -11,7 +11,8 @@ def index():
     :return:
     """
     # 1 / 0
-    return render_template('index.html')
+    content = 'Welcome Python!'
+    return render_template('index.html', index=content)
 
 
 if __name__ == '__main__':
