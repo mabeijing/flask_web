@@ -1,4 +1,14 @@
-SQLALCHEMY_DATABASE_URI = 'mysql://root:Root#123@127.0.0.1:3306/mms_db'
+from urllib.parse import quote_plus as urlquote
+
+# 增加对数据库密码特殊字符的兼容
+passwd = urlquote('Root#123')
+conf = {'user': 'root',
+        'passwd': passwd,
+        'host': '127.0.0.1',
+        'port': 3306,
+        'database': 'mms_db'}
+
+SQLALCHEMY_DATABASE_URI = 'mysql:// {user}:{passwd}@{host}:{port}/{database}'.format(**conf)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # JSON格式返回支持中文
