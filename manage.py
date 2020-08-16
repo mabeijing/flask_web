@@ -1,5 +1,5 @@
 from application import app
-from flask import Response, render_template
+from flask import render_template
 import libs.exceptions
 import www
 

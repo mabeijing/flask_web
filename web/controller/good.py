@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
-from flask import Blueprint
+from flask import Blueprint,request
+from validation.good_validator import GoodValidator
+
 good = Blueprint('good', __name__)
 
 
@@ -8,11 +10,14 @@ def good_lists():
     return 'good_lists'
 
 
-@good.route('/info', methods=["POST"])
-def get_good_info():
+# 动态参数
+@good.route('/info/<good_name>', methods=["POST"])
+def get_good_info(good_name):
+    goods = GoodValidator(request.form)
+    goods.validate()
+    print(goods.name)
     data = {
         'code': 200,
-        'msg': 'ok',
+        'msg': good_name
     }
     return data, 200
-

@@ -41,7 +41,7 @@ def errors_handle(error):
         response = {
             'err_code': 10500,
             'msg': 'Internal Server Error',
-            'data': {'hi': '代码出bug咯'},
+            'data': {},
         }
         return jsonify(response), 500
 
@@ -60,3 +60,5 @@ def errors_handle(error):
             'data': {},
         }
         return jsonify(response), error.code
+
+
