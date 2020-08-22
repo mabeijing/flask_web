@@ -1,14 +1,14 @@
 from urllib.parse import quote_plus as urlquote
 
 # 增加对数据库密码特殊字符的兼容
-passwd = urlquote('Root#123')
+raw_password = urlquote('Root@123')
 conf = {'user': 'root',
-        'passwd': passwd,
-        'host': '127.0.0.1',
+        'password': raw_password,
+        'host': 'localhost',
         'port': 3306,
         'database': 'mms_db'}
 
-SQLALCHEMY_DATABASE_URI = 'mysql:// {user}:{passwd}@{host}:{port}/{database}'.format(**conf)
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(**conf)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # JSON格式返回支持中文
