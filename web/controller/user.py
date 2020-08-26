@@ -2,7 +2,7 @@
 from application import db
 from flask import Blueprint, request, escape
 from models.User import User
-from validation.user_validator import UserValidate, PasswordValidate
+from validation.user_validator import UserInfoValidate
 
 user = Blueprint('user', __name__)
 
@@ -64,24 +64,16 @@ def user_login():
 
 @user.route('/register', methods=['POST'])
 def register_member():
-    form = UserValidate(request.form)
-    pass_form = PasswordValidate(request.form)
+    form = UserInfoValidate(request.form)
     if not form.validate():
         # 验证用户名
-        form.MSG = form.username.errors
-        form.ERR_CODE = form.username.id
+        form.MSG = form.username.errors if form.username.errors else form.password.errors
+        form.ERR_CODE = form.username.id if form.username.id else form.password.id
         form.CODE = 200
         form.DATA = {}
         return form.return_data()
-    if not pass_form.validate():
-        # 验证密码
-        pass_form.MSG = pass_form.password.errors
-        pass_form.ERR_CODE = pass_form.password.id
-        pass_form.CODE = 200
-        pass_form.DATA = {}
-        return pass_form.return_data()
     user_name = form.username.data
-    password = pass_form.password.data
+    password = form.password.data
     one = User()
     result = one.query.filter_by(username=user_name).first()
     if result:
