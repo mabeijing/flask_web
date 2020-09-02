@@ -9,13 +9,7 @@ config = {
     "database": "mms_db",         # 要连接的数据库
     "port": 3306,                 # 端口，一般为 3306
     "unix_socket": None,          # 选择是否要用unix_socket而不是TCP/IP
-    "charset": "utf8mb4",         # 字符编码
-    "sql_mode": None,             # Default SQL_MODE to use.
-    "read_default_file": None,
-    "conv": None,                 # 转换字典
-    "use_unicode": None,          # 是否使用 unicode 编码
-    "init_command": None,         # 连接建立时运行的初始语句
-    "connect_timeout": 10
+    "charset": "utf8mb4"          # 字符编码
 }
 
 connect = pymysql.Connect(**config)
