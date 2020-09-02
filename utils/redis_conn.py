@@ -13,6 +13,6 @@ pool = redis.ConnectionPool(**config)
 
 conn = redis.Redis(connection_pool=pool)
 
-conn.set('cookie', '马北京', 10)
+conn.set('cookie', '橘右京', 10)
 
 print(conn.get('cookie'))
