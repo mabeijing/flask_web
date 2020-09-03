@@ -1,7 +1,8 @@
 import redis
 
 config = {
-    "host": "localhost",
+    "host": "192.168.8.200",
+    "password": "Root@123",
     "port": 6379,
     "db": 0,
     "decode_responses": True,  # 转化字符串，False是字节
