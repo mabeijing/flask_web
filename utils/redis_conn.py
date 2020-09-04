@@ -1,7 +1,7 @@
 import redis
 
-config = {
-    "host": "192.168.8.200",
+redis_conf = {
+    "host": "192.168.2.200",
     "password": "Root@123",
     "port": 6379,
     "db": 0,
@@ -10,7 +10,7 @@ config = {
     "encoding_errors": "strict"
 }
 
-pool = redis.ConnectionPool(**config)
+pool = redis.ConnectionPool(**redis_conf)
 
 conn = redis.Redis(connection_pool=pool)
 
