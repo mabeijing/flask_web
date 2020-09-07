@@ -7,7 +7,11 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-
+"""
+1、tailor()
+    :param html_content
+    :return soup.find_all()
+"""
 def get_html_content(url='https://npm.taobao.org/mirrors/chromedriver'):
     raw_data = requests.get(url)
     if not raw_data:
@@ -15,14 +19,21 @@ def get_html_content(url='https://npm.taobao.org/mirrors/chromedriver'):
     return raw_data.content
 
 
-def tailor(content):
-    soup = BeautifulSoup(content, 'html.parser')
-    data_list = soup.find_all(href=re.compile("mirrors/chromedriver/\d+"))
-    result_set = [(element.attrs['href'], element.string) for element in data_list][:-1]
-    return result_set
+# def tailor(content):
+#     soup = BeautifulSoup(content, 'html.parser')
+#     data_list = soup.find_all(href=re.compile("mirrors/chromedriver/\d+"))
+#     result_set = [(element.attrs['href'], element.string) for element in data_list][:-1]
+#     return result_set
+def tailor(html, regx):
+    soup = BeautifulSoup(html, 'html.parser')
+    reopen_data = soup.find_all(href=re.compile(regx))
+    if not reopen_data:
+        raise ValueError('No Data Match!')
+    return reopen_data
 
 
 def check_and_create_dir(data: list):
+    
     base_dir = 'D:\\chromedriver'
     local_dirs = [(base_dir + '\\' + ele[1], ele[1]) for ele in data]
     if not os.path.exists(base_dir):
