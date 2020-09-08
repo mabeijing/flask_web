@@ -2,6 +2,7 @@ from selenium import webdriver
 import winreg
 import os
 import logging
+import pytest
 
 
 def get_chrome_driver():
@@ -22,17 +23,23 @@ def get_chrome_driver():
     return target_list[0]
 
 
-option = webdriver.ChromeOptions()
-option.add_experimental_option('excludeSwitches', ['enable-automation'])
-# option.add_argument("--headless")
-# option.add_argument("--disable-gpu")
+class Test_demo:
+    def setup_method(self, method):
+        option = webdriver.ChromeOptions()
+        option.add_experimental_option('excludeSwitches', ['enable-automation'])
+        # option.add_argument("--headless")
+        # option.add_argument("--disable-gpu")
+        path = "D:\\chromedriver\\{version}\\chromedriver.exe".format(version=get_chrome_driver())
+        self.driver = webdriver.Chrome(options=option, executable_path=path)
 
-path = "D:\\chromedriver\\{version}\\chromedriver.exe".format(version=get_chrome_driver())
-driver = webdriver.Chrome(options=option, executable_path=path)
+    def teardown_method(self, method):
+        self.driver.quit()
 
-driver.get('http://www.baidu.com')
+    def test_1(self):
+        self.driver.get('https://www.baidu.com')
+        print(self.driver.title)
+        logging.error('ceshi')
 
-print(driver.title)
-logging.error('ceshi')
 
-driver.quit()
+if __name__ == '__main__':
+    pytest.main(['-s'])
