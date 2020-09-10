@@ -1,6 +1,6 @@
 import pymongo
 
-mongo_conf = 'mongodb://192.168.2.200:27017'
+mongo_conf = 'mongodb://192.168.8.200:27017'
 
 # 实例化
 instance = pymongo.MongoClient(mongo_conf)

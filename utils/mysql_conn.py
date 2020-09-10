@@ -3,7 +3,7 @@ version = pymysql.get_client_info()
 
 
 mysql_conf = {
-    "host": "192.168.2.200",      # 要连接的主机地址
+    "host": "192.168.8.200",      # 要连接的主机地址
     "user": "root",               # 用于登录的数据库用户
     "password": "Root@123",       # 密码
     "database": "mms_db",         # 要连接的数据库

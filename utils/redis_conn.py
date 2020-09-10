@@ -1,7 +1,7 @@
 import redis
 
 redis_conf = {
-    "host": "192.168.2.200",
+    "host": "192.168.8.200",
     "password": "Root@123",
     "port": 6379,
     "db": 0,
