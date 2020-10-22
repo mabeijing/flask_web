@@ -1,12 +1,12 @@
 import pymongo
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 import time
 
+BASE_URL = 'https://owner.zczy56.com/'
 mongo_conf = 'mongodb://192.168.8.200:27017'
-
-# 实例化
 instance = pymongo.MongoClient(mongo_conf)
 db = instance['selenium']
 element = db['WebElement']
@@ -21,19 +21,28 @@ class WebElement:
         self.XPATH = xpath
 
 
-exchange = element.find_one({'name': '账号登录'}, {"_id": 0})['element']
-element_exchange = WebElement(**exchange)
+element_exchange = WebElement(**element.find_one({'name': '账号登录'}, {"_id": 0})['element'])
+element_username = WebElement(**element.find_one({'name': '用户名'}, {"_id": 0})['element'])
+element_password = WebElement(**element.find_one({'name': '密码'}, {"_id": 0})['element'])
+element_login = WebElement(**element.find_one({'name': '登录按钮'}, {"_id": 0})['element'])
 
-username = element.find_one({'name': '用户名'}, {"_id": 0})['element']
-element_username = WebElement(**username)
+element_publish = WebElement(**element.find_one({'name': '发布运单'}, {"_id": 0})['element'])
+element_order_name = WebElement(**element.find_one({'name': '货物名称'}, {"_id": 0})['element'])
+element_cargo = WebElement(**element.find_one({'name': '无烟煤'}, {"_id": 0})['element'])
+element_cargo_category = WebElement(**element.find_one({'name': '货物计量'}, {"_id": 0})['element'])
+element_order_weight = WebElement(**element.find_one({'name': '货物吨位'}, {"_id": 0})['element'])
+element_order_packing = WebElement(**element.find_one({'name': '货物包装'}, {"_id": 0})['element'])
+element_vehicle_type_id = WebElement(**element.find_one({'name': '车辆类型'}, {"_id": 0})['element'])
+element_vehicle_no_limit = WebElement(**element.find_one({'name': '不限车辆'}, {"_id": 0})['element'])
+element_carriage_length_id = WebElement(**element.find_one({'name': '车长类型'}, {"_id": 0})['element'])
+element_carriage_length_no_limit = WebElement(**element.find_one({'name': '不限车长'}, {"_id": 0})['element'])
+element_despatch_start = WebElement(**element.find_one({'name': '最早到场时间'}, {"_id": 0})['element'])
+element_despatch_end = WebElement(**element.find_one({'name': '最晚到场时间'}, {"_id": 0})['element'])
+element_receipt_start = WebElement(**element.find_one({'name': '收货时间'}, {"_id": 0})['element'])
+element_cargo_money = WebElement(**element.find_one({'name': '整车货值'}, {"_id": 0})['element'])
 
-userPwd = element.find_one({'name': '密码'}, {"_id": 0})['element']
-element_password = WebElement(id='userPwd')
-
-memberLogin = element.find_one({'name': '登录按钮'}, {"_id": 0})['element']
-element_login = WebElement(id='memberLogin')
-
-BASE_URL = 'https://owner.zczy56.com/'
+element_vehicle_type = WebElement(xpath="//span[contains(.,'车型要求')]")
+element_carriage_length = WebElement(xpath="//span[contains(.,'车长要求')]")
 
 
 class BaseChrome(webdriver.Chrome):
@@ -96,11 +105,17 @@ class Chrome(BaseChrome, Functions):
     #     urls = BASE_PR_URL + url
     #     self.get(urls)
     #     pass
+    def __enter__(self):
+        time.sleep(1)
+        return self
 
-    def login(self, username, password):
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return self.switch_to.parent_frame()
+
+    def login(self, user_name, password):
         try:
             self.find_element_by_selenium(element_exchange).click()
-            self.find_element_by_selenium(element_username).send_keys(username)
+            self.find_element_by_selenium(element_username).send_keys(user_name)
             self.find_element_by_selenium(element_password).send_keys(password)
             self.find_element_by_selenium(element_login).click()
             if self.title != '我的智运-个人中心':
@@ -111,63 +126,79 @@ class Chrome(BaseChrome, Functions):
             self.quit()
 
     def publish(self):
-        element_publish = WebElement(text='发布运单')
         self.find_element_by_selenium(element_publish).click()
-
-        element_order_name = WebElement(name='orderName')
         self.find_element_by_selenium(element_order_name).click()
-
-        element_cargo = WebElement(xpath="//span[contains(.,'无烟煤')]")
         self.find_element_by_selenium(element_cargo).click()
-
-        element_cargo_category = WebElement(id='cargoCategory')
         self.find_element_by_selenium(element_cargo_category).click()
+        cargo_category = self.find_element_by_selenium(element_cargo_category)
+        cargo_category.find_element(By.XPATH, value="//option[. = '重货']").click()
 
-        dropdown = self.find_element_by_selenium(element_cargo_category)
-        dropdown.find_element(By.XPATH, value="//option[. = '重货']").click()
+        self.find_element_by_selenium(element_order_weight).click()
+        self.find_element_by_selenium(element_order_weight).send_keys('10')
 
-        self.find_element(By.ID, "cargoCategory").click()
-        self.find_element(By.NAME, "orderWeight").click()
-        self.find_element(By.NAME, "orderWeight").send_keys("10")
-        # self.find_element(By.ID, "orderPacking1").click()
-        # dropdown = self.find_element(By.ID, "orderPacking1")
-        # dropdown.find_element(By.XPATH, "//option[. = '无']").click()
-        # self.find_element(By.ID, "orderPacking1").click()
-        # self.find_element(By.ID, "vehicleTypeId").click()
-        # self.find_element(By.CSS_SELECTOR, ".li:nth-child(1) > label > .checkbox").click()
-        # self.find_element(By.CSS_SELECTOR, "#baseBlockDiv .li-row:nth-child(3)").click()
-        # self.find_element(By.ID, "carriageLengthId").click()
-        # self.find_element(By.CSS_SELECTOR, ".li:nth-child(1) > label > .checkbox").click()
-        # self.find_element(By.CSS_SELECTOR,
-        #                   "#baseBlockDiv .li-row:nth-child(3) > .li-item:nth-child(1) .title-text").click()
-        # self.find_element(By.ID, "despatchStart").click()
-        # self.switch_to.frame(0)
-        # time.sleep(1)
-        # self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,22);']").click()
-        # self.find_element(By.ID, "dpOkInput").click()
-        # self.switch_to.default_content()
-        # self.find_element(By.ID, "despatchEnd").click()
-        # self.switch_to.frame(0)
-        # self.find_element(By.CSS_SELECTOR, ".WdayOn").click()
-        # self.find_element(By.ID, "dpOkInput").click()
-        # self.switch_to.default_content()
-        # self.find_element(By.ID, "despatchEnd").send_keys("2020-10-30 23:07")
-        # self.find_element(By.ID, "receiptStart").click()
-        # self.switch_to.frame(0)
-        # self.find_element(By.CSS_SELECTOR, ".WwdayOn").click()
-        # self.find_element(By.ID, "dpOkInput").click()
-        # self.switch_to.default_content()
-        # self.find_element(By.ID, "cargoMoney").click()
-        # self.find_element(By.ID, "cargoMoney").send_keys("10000")
-        # self.find_element(By.CSS_SELECTOR, ".mr-30:nth-child(4) > .radio").click()
-        # self.find_element(By.ID, "quote").click()
-        # self.find_element(By.ID, "quote").send_keys("100")
-        # self.find_element(By.ID, "haveBuyPolicyYes").click()
-        # self.find_element(By.ID, "serviceAgreement").click()
-        # self.find_element(By.ID, "haveReceipt2").click()
-        # self.find_element(By.ID, "haveSupportSdOilCard2").click()
-        # self.find_element(By.LINK_TEXT, "货物不超长不超宽不超高").click()
-        # self.find_element(By.ID, "btn1").click()
+        self.find_element_by_selenium(element_order_packing).click()
+        order_packing = self.find_element_by_selenium(element_order_packing)
+        order_packing.find_element(By.XPATH, "//option[. = '无']").click()
+
+        self.find_element_by_selenium(element_vehicle_type_id).click()
+        self.find_element_by_selenium(element_vehicle_no_limit).click()
+        self.find_element_by_selenium(element_vehicle_type).click()
+
+        self.find_element_by_selenium(element_carriage_length_id).click()
+        self.find_element_by_selenium(element_carriage_length_no_limit).click()
+        self.find_element_by_selenium(element_carriage_length).click()
+
+        self.find_element_by_selenium(element_despatch_start).click()
+        self.switch_to.frame(0)
+        time.sleep(0.5)
+        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,24);']").click()
+        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
+        self.execute_script("arguments[0].focus();", ele1)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
+        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
+        self.execute_script("arguments[0].focus();", ele2)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
+        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
+        self.switch_to.parent_frame()
+
+        self.find_element_by_selenium(element_despatch_end).click()
+        self.switch_to.frame(0)
+        time.sleep(0.5)
+        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,30);']").click()
+        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
+        self.execute_script("arguments[0].focus();", ele1)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
+        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
+        self.execute_script("arguments[0].focus();", ele2)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
+        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
+        self.switch_to.parent_frame()
+
+        self.find_element_by_selenium(element_receipt_start).click()
+        self.switch_to.frame(0)
+        time.sleep(0.5)
+        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,31);']").click()
+        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
+        self.execute_script("arguments[0].focus();", ele1)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
+        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
+        self.execute_script("arguments[0].focus();", ele2)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
+        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
+        self.switch_to.parent_frame()
+
+        self.find_element_by_selenium(element_cargo_money).click()
+        self.find_element_by_selenium(element_cargo_money).send_keys('10000')
+
+        self.find_element(By.CSS_SELECTOR, ".mr-30:nth-child(4) > .radio").click()
+        self.find_element(By.ID, "quote").click()
+        self.find_element(By.ID, "quote").send_keys("100")
+        self.find_element(By.ID, "haveBuyPolicyYes").click()
+        self.find_element(By.ID, "serviceAgreement").click()
+        self.find_element(By.ID, "haveReceipt2").click()
+        self.find_element(By.ID, "haveSupportSdOilCard2").click()
+        self.find_element(By.LINK_TEXT, "货物不超长不超宽不超高").click()
+        self.find_element(By.ID, "btn1").click()
 
 
 if __name__ == '__main__':
