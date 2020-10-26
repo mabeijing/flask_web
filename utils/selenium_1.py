@@ -79,13 +79,13 @@ class BaseChrome(webdriver.Chrome):
                 pass
 
     def open(self, url=None):
-        WINDOWS_HANDLE_DICT['last'] = WINDOWS_HANDLE_DICT['current']
-        WINDOWS_HANDLE_DICT['current'] = self.current_window_handle
-        WINDOWS_HANDLE_DICT[url] = self.current_window_handle
         self.maximize_window()
         self.get(url)
+        WINDOWS_HANDLE_DICT[url] = self.current_window_handle
+        WINDOWS_HANDLE_DICT['current'] = WINDOWS_HANDLE_DICT[url]
 
     def open_new_window_tab(self, url):
+        WINDOWS_HANDLE_DICT['last'] = self.current_window_handle
         js = 'window.open("{url}")'.format(url=url)
         self.execute_script(js)
         for handle in self.window_handles:
@@ -93,6 +93,16 @@ class BaseChrome(webdriver.Chrome):
             if self.current_url == url:
                 WINDOWS_HANDLE_DICT[url] = handle
         self.switch_to.window(WINDOWS_HANDLE_DICT[url])
+        WINDOWS_HANDLE_DICT['current'] = WINDOWS_HANDLE_DICT[url]
+
+    def change_window_tab(self, url=None):
+        if not url:
+            try:
+                self.switch_to.window(WINDOWS_HANDLE_DICT['last'])
+            except Exception:
+                self.switch_to.window(WINDOWS_HANDLE_DICT['current'])
+        else:
+            self.switch_to.window(WINDOWS_HANDLE_DICT[url])
 
 
 class Functions:
@@ -132,9 +142,6 @@ class Chrome(BaseChrome, Functions):
         self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
         self.switch_to.parent_frame()
         time.sleep(0.1)
-
-    def change_window_tab(self, url=None):
-        self.switch_to.window(WINDOWS_HANDLE_DICT[url])
 
     def login(self, user_name, password):
         if self.current_url == 'http://sit.zczy-web.zczy.com/modules/mms/system/login.html':
@@ -203,9 +210,9 @@ class Chrome(BaseChrome, Functions):
 if __name__ == '__main__':
     driver = Chrome()
     driver.open(url='/modules/mms/system/login.html')
-    driver.login('17926661154', 'a123456789')
+    driver.login()
     driver.open_new_window_tab(url='http://sit.boss-admin.zczy.com/login.html')
-    driver.login('mabeijing56', 'a123456')
+    driver.login()
     driver.change_window_tab(url='http://sit.zczy-web.zczy.com/modules/mms/system/login.html')
     driver.publish()
     driver.close()
