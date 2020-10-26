@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 import time
 
-BASE_URL = 'https://owner.zczy56.com/'
+WINDOWS_HANDLE_DICT = {}
 mongo_conf = 'mongodb://192.168.8.200:27017'
 instance = pymongo.MongoClient(mongo_conf)
 db = instance['selenium']
@@ -40,6 +40,9 @@ element_despatch_start = WebElement(**element.find_one({'name': '最早到场时
 element_despatch_end = WebElement(**element.find_one({'name': '最晚到场时间'}, {"_id": 0})['element'])
 element_receipt_start = WebElement(**element.find_one({'name': '收货时间'}, {"_id": 0})['element'])
 element_cargo_money = WebElement(**element.find_one({'name': '整车货值'}, {"_id": 0})['element'])
+element_admin_username = WebElement(**element.find_one({'name': '后台登录账号'}, {"_id": 0})['element'])
+element_admin_password = WebElement(**element.find_one({'name': '后台登录密码'}, {"_id": 0})['element'])
+element_admin_login = WebElement(**element.find_one({'name': '后台登录按钮'}, {"_id": 0})['element'])
 
 element_vehicle_type = WebElement(xpath="//span[contains(.,'车型要求')]")
 element_carriage_length = WebElement(xpath="//span[contains(.,'车长要求')]")
@@ -75,17 +78,32 @@ class BaseChrome(webdriver.Chrome):
             else:
                 pass
 
+    def open(self, url=None):
+        WINDOWS_HANDLE_DICT['last'] = WINDOWS_HANDLE_DICT['current']
+        WINDOWS_HANDLE_DICT['current'] = self.current_window_handle
+        WINDOWS_HANDLE_DICT[url] = self.current_window_handle
+        self.maximize_window()
+        self.get(url)
+
+    def open_new_window_tab(self, url):
+        js = 'window.open("{url}")'.format(url=url)
+        self.execute_script(js)
+        for handle in self.window_handles:
+            self.switch_to.window(handle)
+            if self.current_url == url:
+                WINDOWS_HANDLE_DICT[url] = handle
+        self.switch_to.window(WINDOWS_HANDLE_DICT[url])
+
 
 class Functions:
 
     def open(self, url=None):
-        urls = BASE_URL + url
-        self.get(urls)
+        self.get(url)
         self.maximize_window()
 
 
 class Chrome(BaseChrome, Functions):
-    """docstring for Login"""
+    """docstring for Chrome"""
 
     def __init__(self, executable_path="chromedriver", port=0,
                  options=None, service_args=None,
@@ -101,29 +119,40 @@ class Chrome(BaseChrome, Functions):
                             keep_alive=keep_alive)
         Functions.__init__(self)
 
-    # def open(self, url=None):
-    #     urls = BASE_PR_URL + url
-    #     self.get(urls)
-    #     pass
-    def __enter__(self):
-        time.sleep(1)
-        return self
+    def _time_control_set(self, time_str):
+        self.switch_to.frame(0)
+        time.sleep(0.2)
+        self.find_element(By.XPATH, "//td[@onclick='day_Click({time});']".format(time=time_str)).click()
+        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
+        self.execute_script("arguments[0].focus();", ele1)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
+        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
+        self.execute_script("arguments[0].focus();", ele2)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('05')
+        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
+        self.switch_to.parent_frame()
+        time.sleep(0.1)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        return self.switch_to.parent_frame()
+    def change_window_tab(self, url=None):
+        self.switch_to.window(WINDOWS_HANDLE_DICT[url])
 
     def login(self, user_name, password):
-        try:
-            self.find_element_by_selenium(element_exchange).click()
-            self.find_element_by_selenium(element_username).send_keys(user_name)
-            self.find_element_by_selenium(element_password).send_keys(password)
-            self.find_element_by_selenium(element_login).click()
-            if self.title != '我的智运-个人中心':
-                self.save_screenshot('登陆失败.png')
-        except Exception as e:
-            print(e)
-            self.save_screenshot('1.png')
-            self.quit()
+        if self.current_url == 'http://sit.zczy-web.zczy.com/modules/mms/system/login.html':
+            try:
+                self.find_element_by_selenium(element_exchange).click()
+                self.find_element_by_selenium(element_username).send_keys(user_name)
+                self.find_element_by_selenium(element_password).send_keys(password)
+                self.find_element_by_selenium(element_login).click()
+                if self.title != '我的智运-个人中心':
+                    self.save_screenshot('登陆失败.png')
+            except Exception as e:
+                print(e)
+                self.save_screenshot('1.png')
+                self.quit()
+        elif self.current_url == 'http://sit.boss-admin.zczy.com/login.html':
+            driver.find_element_by_selenium(element_admin_username).send_keys(user_name)
+            driver.find_element_by_selenium(element_admin_password).send_keys(password)
+            driver.find_element_by_selenium(element_admin_login).click()
 
     def publish(self):
         self.find_element_by_selenium(element_publish).click()
@@ -149,43 +178,13 @@ class Chrome(BaseChrome, Functions):
         self.find_element_by_selenium(element_carriage_length).click()
 
         self.find_element_by_selenium(element_despatch_start).click()
-        self.switch_to.frame(0)
-        time.sleep(0.5)
-        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,24);']").click()
-        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
-        self.execute_script("arguments[0].focus();", ele1)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
-        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
-        self.execute_script("arguments[0].focus();", ele2)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
-        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
-        self.switch_to.parent_frame()
+        self._time_control_set('2020,10,27')
 
         self.find_element_by_selenium(element_despatch_end).click()
-        self.switch_to.frame(0)
-        time.sleep(0.5)
-        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,30);']").click()
-        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
-        self.execute_script("arguments[0].focus();", ele1)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
-        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
-        self.execute_script("arguments[0].focus();", ele2)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
-        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
-        self.switch_to.parent_frame()
+        self._time_control_set('2020,10,30')
 
         self.find_element_by_selenium(element_receipt_start).click()
-        self.switch_to.frame(0)
-        time.sleep(0.5)
-        self.find_element(By.XPATH, "//td[@onclick='day_Click(2020,10,31);']").click()
-        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
-        self.execute_script("arguments[0].focus();", ele1)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
-        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
-        self.execute_script("arguments[0].focus();", ele2)
-        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('55')
-        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
-        self.switch_to.parent_frame()
+        self._time_control_set('2020,10,31')
 
         self.find_element_by_selenium(element_cargo_money).click()
         self.find_element_by_selenium(element_cargo_money).send_keys('10000')
@@ -202,20 +201,12 @@ class Chrome(BaseChrome, Functions):
 
 
 if __name__ == '__main__':
-    from selenium import webdriver
-
-    option = webdriver.ChromeOptions()
-    prefs = {
-        'profile.default_content_setting_values':
-            {
-                'notifications': 2
-            }
-    }
-    option.add_experimental_option('prefs', prefs)  # 关掉浏览器左上角的通知提示，如上图
-    option.add_argument("disable-infobars")  # 关闭'chrome正受到自动测试软件的控制'提示
-    driver = Chrome(options=option)
+    driver = Chrome()
     driver.open(url='/modules/mms/system/login.html')
-    driver.login()
+    driver.login('17926661154', 'a123456789')
+    driver.open_new_window_tab(url='http://sit.boss-admin.zczy.com/login.html')
+    driver.login('mabeijing56', 'a123456')
+    driver.change_window_tab(url='http://sit.zczy-web.zczy.com/modules/mms/system/login.html')
     driver.publish()
-
+    driver.close()
     driver.quit()
