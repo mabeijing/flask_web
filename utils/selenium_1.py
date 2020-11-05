@@ -1,10 +1,51 @@
-from selenium import webdriver
-
-
+import pymongo
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 import time
+
+WINDOWS_HANDLE_DICT = {}
+mongo_conf = 'mongodb://192.168.8.200:27017'
+instance = pymongo.MongoClient(mongo_conf)
+db = instance['selenium']
+element = db['WebElement']
+
+
+class WebElement:
+    def __init__(self, id=None, name=None, css=None, text=None, xpath=None):
+        self.ID = id
+        self.NAME = name
+        self.CSS_SELECTOR = css
+        self.LINK_TEXT = text
+        self.XPATH = xpath
+
+
+element_exchange = WebElement(**element.find_one({'name': '账号登录'}, {"_id": 0})['element'])
+element_username = WebElement(**element.find_one({'name': '用户名'}, {"_id": 0})['element'])
+element_password = WebElement(**element.find_one({'name': '密码'}, {"_id": 0})['element'])
+element_login = WebElement(**element.find_one({'name': '登录按钮'}, {"_id": 0})['element'])
+
+element_publish = WebElement(**element.find_one({'name': '发布运单'}, {"_id": 0})['element'])
+element_order_name = WebElement(**element.find_one({'name': '货物名称'}, {"_id": 0})['element'])
+element_cargo = WebElement(**element.find_one({'name': '无烟煤'}, {"_id": 0})['element'])
+element_cargo_category = WebElement(**element.find_one({'name': '货物计量'}, {"_id": 0})['element'])
+element_order_weight = WebElement(**element.find_one({'name': '货物吨位'}, {"_id": 0})['element'])
+element_order_packing = WebElement(**element.find_one({'name': '货物包装'}, {"_id": 0})['element'])
+element_vehicle_type_id = WebElement(**element.find_one({'name': '车辆类型'}, {"_id": 0})['element'])
+element_vehicle_no_limit = WebElement(**element.find_one({'name': '不限车辆'}, {"_id": 0})['element'])
+element_carriage_length_id = WebElement(**element.find_one({'name': '车长类型'}, {"_id": 0})['element'])
+element_carriage_length_no_limit = WebElement(**element.find_one({'name': '不限车长'}, {"_id": 0})['element'])
+element_despatch_start = WebElement(**element.find_one({'name': '最早到场时间'}, {"_id": 0})['element'])
+element_despatch_end = WebElement(**element.find_one({'name': '最晚到场时间'}, {"_id": 0})['element'])
+element_receipt_start = WebElement(**element.find_one({'name': '收货时间'}, {"_id": 0})['element'])
+element_cargo_money = WebElement(**element.find_one({'name': '整车货值'}, {"_id": 0})['element'])
+element_admin_username = WebElement(**element.find_one({'name': '后台登录账号'}, {"_id": 0})['element'])
+element_admin_password = WebElement(**element.find_one({'name': '后台登录密码'}, {"_id": 0})['element'])
+element_admin_login = WebElement(**element.find_one({'name': '后台登录按钮'}, {"_id": 0})['element'])
+
+element_vehicle_type = WebElement(xpath="//span[contains(.,'车型要求')]")
+element_carriage_length = WebElement(xpath="//span[contains(.,'车长要求')]")
 
 
 class BaseChrome(webdriver.Chrome):
@@ -21,11 +62,15 @@ class BaseChrome(webdriver.Chrome):
                          chrome_options=chrome_options,
                          keep_alive=keep_alive)
 
-    def find_e(self, element):
-        for key, value in element.__dict__.items():
+    def find_element_by_selenium(self, element_location):
+        for key, value in element_location.__dict__.items():
             if value and key != 'js':
                 try:
-                    return self.find_element(by='css', value=value)
+                    ele = self.find_element(by=eval('By.' + key), value=value)
+                    time.sleep(0.1)
+                    self.execute_script("arguments[0].scrollIntoView({block: 'center'});", ele)
+                    time.sleep(0.1)
+                    return ele
                 except WebDriverException as e:
                     print(key, value, e)
             elif value and key == 'js':
@@ -33,40 +78,42 @@ class BaseChrome(webdriver.Chrome):
             else:
                 pass
 
+    def open(self, url=None):
+        self.maximize_window()
+        self.get(url)
+        WINDOWS_HANDLE_DICT[url] = self.current_window_handle
+        WINDOWS_HANDLE_DICT['current'] = WINDOWS_HANDLE_DICT[url]
 
-class WebElement:
-    def __init__(self, id=None, name=None, css=None, text=None, xpath=None):
-        self.ID = id
-        self.CSS_SELECTOR = css
-        self.LINK_TEXT = text
-        self.XPATH = xpath
+    def open_new_window_tab(self, url):
+        WINDOWS_HANDLE_DICT['last'] = self.current_window_handle
+        js = 'window.open("{url}")'.format(url=url)
+        self.execute_script(js)
+        for handle in self.window_handles:
+            self.switch_to.window(handle)
+            if self.current_url == url:
+                WINDOWS_HANDLE_DICT[url] = handle
+        self.switch_to.window(WINDOWS_HANDLE_DICT[url])
+        WINDOWS_HANDLE_DICT['current'] = WINDOWS_HANDLE_DICT[url]
 
-exchange = {'css': '.tab-link:nth-child(2)', 'text': '账号登录', 'xpath': '//a[2]'}
-
-element_exchange = WebElement(**exchange)
-
-element_username = WebElement(id='userName')
-
-element_password = WebElement(id='userPwd')
-
-
-element_login = WebElement(id='memberLogin')
+    def change_window_tab(self, url=None):
+        if not url:
+            try:
+                self.switch_to.window(WINDOWS_HANDLE_DICT['last'])
+            except Exception:
+                self.switch_to.window(WINDOWS_HANDLE_DICT['current'])
+        else:
+            self.switch_to.window(WINDOWS_HANDLE_DICT[url])
 
 
-BASE_PR_URL = 'http://pre.zczy-web.zczy.com'
-
-
-class Base:
-    def __init__(self):
-        pass
+class Functions:
 
     def open(self, url=None):
-        urls = BASE_PR_URL + url
-        self.get(urls)
+        self.get(url)
+        self.maximize_window()
 
 
-class Chrome(BaseChrome, Base):
-    """docstring for Login"""
+class Chrome(BaseChrome, Functions):
+    """docstring for Chrome"""
 
     def __init__(self, executable_path="chromedriver", port=0,
                  options=None, service_args=None,
@@ -80,37 +127,93 @@ class Chrome(BaseChrome, Base):
                             service_log_path=service_log_path,
                             chrome_options=chrome_options,
                             keep_alive=keep_alive)
-        Base.__init__(self)
+        Functions.__init__(self)
 
-    # def open(self, url=None):
-    #     urls = BASE_PR_URL + url
-    #     self.get(urls)
-    #     pass
+    def _time_control_set(self, time_str):
+        self.switch_to.frame(0)
+        time.sleep(0.2)
+        self.find_element(By.XPATH, "//td[@onclick='day_Click({time});']".format(time=time_str)).click()
+        ele1 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]")
+        self.execute_script("arguments[0].focus();", ele1)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[1]").send_keys('9')
+        ele2 = self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]")
+        self.execute_script("arguments[0].focus();", ele2)
+        self.find_element(By.XPATH, "//div[@id='dpTime']/table/tbody/tr/td/input[3]").send_keys('05')
+        self.find_element(By.XPATH, '//input[@id="dpOkInput"]').click()
+        self.switch_to.parent_frame()
+        time.sleep(0.1)
 
-    def login(self, username, password):
-        try:
-            self.find_e(element_exchange).click()
-            self.find_e(element_username).send_keys(username)
-            self.find_e(element_password).send_keys(password)
-            self.find_e(element_login).click()
-            if self.title == '我的智运-个人中心':
-                self.save_screenshot('登陆成功图.png')
-            else:
-                self.save_screenshot('登陆失败.png')
-        except Exception as e:
-            print(e)
-            self.save_screenshot('1.png')
-            self.quit()
+    def login(self, user_name, password):
+        if self.current_url == 'http://sit.zczy-web.zczy.com/modules/mms/system/login.html':
+            try:
+                self.find_element_by_selenium(element_exchange).click()
+                self.find_element_by_selenium(element_username).send_keys(user_name)
+                self.find_element_by_selenium(element_password).send_keys(password)
+                self.find_element_by_selenium(element_login).click()
+                if self.title != '我的智运-个人中心':
+                    self.save_screenshot('登陆失败.png')
+            except Exception as e:
+                print(e)
+                self.save_screenshot('1.png')
+                self.quit()
+        elif self.current_url == 'http://sit.boss-admin.zczy.com/login.html':
+            driver.find_element_by_selenium(element_admin_username).send_keys(user_name)
+            driver.find_element_by_selenium(element_admin_password).send_keys(password)
+            driver.find_element_by_selenium(element_admin_login).click()
+
+    def publish(self):
+        self.find_element_by_selenium(element_publish).click()
+        self.find_element_by_selenium(element_order_name).click()
+        self.find_element_by_selenium(element_cargo).click()
+        self.find_element_by_selenium(element_cargo_category).click()
+        cargo_category = self.find_element_by_selenium(element_cargo_category)
+        cargo_category.find_element(By.XPATH, value="//option[. = '重货']").click()
+
+        self.find_element_by_selenium(element_order_weight).click()
+        self.find_element_by_selenium(element_order_weight).send_keys('10')
+
+        self.find_element_by_selenium(element_order_packing).click()
+        order_packing = self.find_element_by_selenium(element_order_packing)
+        order_packing.find_element(By.XPATH, "//option[. = '无']").click()
+
+        self.find_element_by_selenium(element_vehicle_type_id).click()
+        self.find_element_by_selenium(element_vehicle_no_limit).click()
+        self.find_element_by_selenium(element_vehicle_type).click()
+
+        self.find_element_by_selenium(element_carriage_length_id).click()
+        self.find_element_by_selenium(element_carriage_length_no_limit).click()
+        self.find_element_by_selenium(element_carriage_length).click()
+
+        self.find_element_by_selenium(element_despatch_start).click()
+        self._time_control_set('2020,10,27')
+
+        self.find_element_by_selenium(element_despatch_end).click()
+        self._time_control_set('2020,10,30')
+
+        self.find_element_by_selenium(element_receipt_start).click()
+        self._time_control_set('2020,10,31')
+
+        self.find_element_by_selenium(element_cargo_money).click()
+        self.find_element_by_selenium(element_cargo_money).send_keys('10000')
+
+        self.find_element(By.CSS_SELECTOR, ".mr-30:nth-child(4) > .radio").click()
+        self.find_element(By.ID, "quote").click()
+        self.find_element(By.ID, "quote").send_keys("100")
+        self.find_element(By.ID, "haveBuyPolicyYes").click()
+        self.find_element(By.ID, "serviceAgreement").click()
+        self.find_element(By.ID, "haveReceipt2").click()
+        self.find_element(By.ID, "haveSupportSdOilCard2").click()
+        self.find_element(By.LINK_TEXT, "货物不超长不超宽不超高").click()
+        self.find_element(By.ID, "btn1").click()
+
 
 if __name__ == '__main__':
-    # option = webdriver.ChromeOptions()
-    # option.add_argument("--headless")
-    # option.add_argument("--disable-gpu")
-    from selenium import webdriver
-    option = webdriver.ChromeOptions()
-    option.add_argument('--incognito')
-    driver = Chrome(options=option)
+    driver = Chrome()
     driver.open(url='/modules/mms/system/login.html')
-    driver.login('17916661005', 'a123456789')
-
+    driver.login()
+    driver.open_new_window_tab(url='http://sit.boss-admin.zczy.com/login.html')
+    driver.login()
+    driver.change_window_tab(url='http://sit.zczy-web.zczy.com/modules/mms/system/login.html')
+    driver.publish()
+    driver.close()
     driver.quit()
