@@ -1,13 +1,45 @@
 # -*- coding:utf-8 -*-
 from application import db
-from flask import Blueprint, request, escape
+from flask import Blueprint, request, escape, session, make_response
 from models.User import User
-from validation.user_validator import UserInfoValidate
+from flask_restful import Api, Resource
+from validate.userForm import UserForm
+from flask_wtf.csrf import generate_csrf
 
-user = Blueprint('user', __name__)
+user = Blueprint('user', __name__, url_prefix='/user')
+
+api = Api(user)
 
 
-@user.route('/login', methods=["GET", "POST"])
+@api.resource('/<int:uid>', '/list')
+class User(Resource):
+    def get(self):
+        """获取资源基本信息"""
+        userForm = UserForm(request.args)
+        if not userForm.validate():
+            return {'code': 10010,
+                    'msg': userForm.user.errors or userForm.pwd}
+        return {'code': 'get'}
+
+    def post(self, uid):
+        """新增一个user资源"""
+        userForm = UserForm(request.form)
+        if not userForm.validate():
+            return {'code': 10011,
+                    'msg': userForm.errors}
+        print(userForm.data)
+        return uid
+
+    def put(self, uid):
+        """修改一个user资源"""
+        return 'put'
+
+    def delete(self, uid):
+        """删除一个user资源"""
+        return 'delete'
+
+
+@user.route('/login', methods=["GET"])
 def user_login():
     """
     request.args 获取url?name='beijing'&password='123456'全部参数
@@ -20,46 +52,12 @@ def user_login():
     request.get_data() 获取表单x-www-form-urlencoded的二进制值
     :return:
     """
-    print(request.headers['Content-Type'])
-    raw_data = eval(request.get_data().decode('utf-8'))
-    print(raw_data)
-    username = raw_data.get('username')
-    print(username)
-    name = request.form.get('username', default=None) or request.args.get('username', default=None) or raw_data.get('username')
-    if not name:
-        return {'err_code': '204',
-                'msg': 'name是必填字段',
-                'data': {}
-                }, 200
+    # print(request.headers['Content-Type'])
+    response = make_response('hello')
+    response.set_cookie("csrf_token", generate_csrf())
+    return response
 
-    users = User()
-    one = users.query.filter_by(username=name).first()
 
-    if not one:
-        return {'code': '203',
-                'msg': name + '用户未注册',
-                'data': {}
-                }, 200
-    password = request.form.get('password', default=None) or request.args.get('password', default=None) or raw_data.get('password')
-    if not password:
-        return {'code': '204',
-                'msg': 'password是必填字段',
-                'data': {}
-                }, 200
-    if one.username == name and one.password == password:
-        return {'code': '200',
-                'msg': '用户登陆成功',
-                'data': {
-                    'username': one.username,
-                    'password': one.password}
-                }, 200
-    else:
-        return {'code': '205',
-                'msg': '用户名或密码不正确',
-                'data': {
-                    'username': name,
-                    'password': password}
-                }, 200
 
 
 @user.route('/register', methods=['POST'])

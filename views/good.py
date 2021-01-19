@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-from flask import Blueprint,request
-from validation.good_validator import GoodValidator
+from flask import Blueprint, request
+from validate.good_validator import GoodValidator
 
-good = Blueprint('good', __name__)
+good = Blueprint('good', __name__, url_prefix='/good')
 
 
 @good.route('/list')

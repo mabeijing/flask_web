@@ -1,18 +1,25 @@
 from application import app
-from flask import render_template
-import libs.exceptions
-import www
+from views.user import user
+from views.good import good
+from werkzeug.exceptions import HTTPException
+
+app.register_blueprint(user)
+app.register_blueprint(good)
 
 
-@app.route('/', methods=['GET'])
-def index():
-    """
-    预留测试错误
-    :return:
-    """
-    # 1 / 0
-    content = 'Welcome Python!'
-    return render_template('index.html', index=content)
+@app.errorhandler(Exception)
+def errors_handle(error):
+    if not isinstance(error, HTTPException):
+        response = {
+            'code': '500',
+            'name': str(type(error)),
+            'msg': str(error),
+        }
+        return response
+    else:
+        return {'code': error.code,
+                'name': error.name,
+                'msg': error.description}
 
 
 if __name__ == '__main__':
