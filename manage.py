@@ -2,6 +2,10 @@ from application import app
 from views.user import user
 from views.good import good
 from werkzeug.exceptions import HTTPException
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 app.register_blueprint(user)
 app.register_blueprint(good)

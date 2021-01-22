@@ -17,7 +17,7 @@ JSON_AS_ASCII = False
 SECRET_KEY = '123456'
 
 # flask-wtf 对csrf的配置
-WTF_CSRF_SECRET_KEY = '12435'
+# WTF_CSRF_SECRET_KEY = '12435'
 WTF_CSRF_ENABLED = True
 
 
