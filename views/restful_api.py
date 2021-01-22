@@ -1,11 +1,8 @@
-from application import app
-from flask_restful import Api, Resource
+from flask import request
+from flask_restful import Resource
 from validate import JsonInput, ParamInput, UserForm
 
-api = Api(app)
 
-
-@api.resource('/api/v1/<int:uid>')
 class User(Resource):
     def get(self):
         """获取资源基本信息"""
@@ -20,7 +17,7 @@ class User(Resource):
 
     def post(self, uid):
         """新增一个user资源"""
-        userForm = UserForm(request.form, meta={'csrf': False})
+        userForm = UserForm(request.form)
         if not userForm.validate():
             return userForm.errors
         return userForm.data

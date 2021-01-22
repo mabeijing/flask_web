@@ -1,14 +1,20 @@
 from application import app
 from views.user import user
 from views.good import good
+from views.restful_api import User
+from flask_restful import Api
 from werkzeug.exceptions import HTTPException
+from flask_script import Manager
 import logging
-
 
 logging.basicConfig(level=logging.DEBUG)
 
+manager = Manager(app)
+api = Api(app)
+
 app.register_blueprint(user)
 app.register_blueprint(good)
+api.add_resource(User, '/api/v1/<int:uid>')
 
 
 @app.errorhandler(Exception)
@@ -26,5 +32,12 @@ def errors_handle(error):
                 'msg': error.description}
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
+#     app.run(debug=True, host='localhost', port=5000)
+@manager.command
+def runserver():
     app.run(debug=True, host='localhost', port=5000)
+
+
+if __name__ == "__main__":
+    manager.run()
