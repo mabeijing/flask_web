@@ -5,19 +5,17 @@ from models.User import User
 from flask_wtf.csrf import generate_csrf
 from flask_restful import Api, Resource
 from validate import JsonInput, ParamInput, UserForm
+import logging
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
 api = Api(user)
 
 
-# @user.after_request
-# def after_request(response):
-#     # 调用函数生成 csrf_token
-#     csrf_token = generate_csrf()
-#     # 通过 cookie 将值传给前端
-#     response.set_cookie("csrf_token", csrf_token)
-#     return response
+@user.after_request
+def after_request(response):
+    logging.error(response)
+    return response
 
 
 @api.resource('/info')
@@ -28,6 +26,7 @@ class User(Resource):
         # if not userForm.validate():
         #     return userForm.errors
         # return userForm.data
+        print(request.args)
         param = ParamInput(request)
         if not param.validate():
             return param.errors
@@ -35,10 +34,17 @@ class User(Resource):
 
     def post(self):
         """新增一个user资源"""
+        logging.error(request.form)
         userForm = UserForm(request.form, meta={'csrf': False})
         if not userForm.validate():
-            return userForm.errors
-        return userForm.data
+            return {
+                'success': False,
+                'data': userForm.errors
+            }
+        return {
+            'success': True,
+            'data': userForm.data
+        }
 
     def put(self):
         """修改一个user资源"""

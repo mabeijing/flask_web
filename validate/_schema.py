@@ -4,16 +4,16 @@ schema = {
     "description": "some information about test",
     "type": "object",
     "properties": {
-        "name": {
+        "username": {
             "description": "Name of the test",
             "type": "string"
         },
-        "age": {
+        "password": {
             "description": "age of test",
-            "type": "integer"
+            "type": "string"
         }
     },
     "required": [
-        "name", "age"
+        "username", "password"
     ]
 }
