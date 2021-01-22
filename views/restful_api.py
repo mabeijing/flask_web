@@ -25,16 +25,24 @@ class User(Resource):
     def post(self):
         """修改一个user资源"""
         print(request.json)
+
         json_inputs = JsonInput(request)
         if not json_inputs.validate():
             return {
                 'success': False,
                 'data': json_inputs.errors
             }
-        return {
-            'success': True,
-            'data': {}
-        }
+        data = request.json
+        if data.get('username') == 'admin' and data.get('password') == '123456':
+            return {
+                'success': True,
+                'data': '登陆成功'
+            }
+        else:
+            return {
+                'success': False,
+                'data': '用户名或者密码不正确, 真的是草啊'
+            }
 
     def delete(self):
         """删除一个user资源"""
