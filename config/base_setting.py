@@ -7,7 +7,12 @@ conf = {'user': 'root',
         'port': 3306,
         'database': 'mms_db'}
 
+# 支持多数据库配置
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(**conf)
+SQLALCHEMY_BINDS = {
+        'users': '',
+        'address': 'sqlite:///path/to/address.db'
+}
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # JSON格式返回支持中文
