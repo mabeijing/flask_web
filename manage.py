@@ -1,20 +1,7 @@
-from application import app
-from views.user import user
-from views.good import good
-from views.restful_api import User, Case
-from flask_restful import Api
+from application import create_app
 from werkzeug.exceptions import HTTPException
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-
-api = Api(app)
-
-app.register_blueprint(user)
-app.register_blueprint(good)
-api.add_resource(User, '/api/v1/user')
-api.add_resource(Case, '/api/v1/case')
+app = create_app()
 
 
 @app.errorhandler(Exception)

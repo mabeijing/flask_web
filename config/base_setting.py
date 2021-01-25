@@ -2,7 +2,7 @@ from urllib.parse import quote_plus as urlquote
 
 # 增加对数据库密码特殊字符的兼容
 conf = {'user': 'root',
-        'password': urlquote('Root@123'),
+        'password': urlquote('root@123'),
         'host': 'localhost',
         'port': 3306,
         'database': 'mms_db'}

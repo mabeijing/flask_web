@@ -10,3 +10,6 @@ class User(db.Model):
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
 
+    def __repr__(self):
+        return "<user>: id={id}, username={username}".format(id=self.id, username=self.username)
+
