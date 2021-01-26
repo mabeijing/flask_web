@@ -9,7 +9,8 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255))
-    password = db.Column(db.String(255))
+    password = db.Column(db.String(255), nullable=False)
+    confirm_password = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return "<user>: id={id}, username={username}".format(id=self.id, username=self.username)
@@ -20,9 +21,12 @@ class Demo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     demo = db.Column(db.String(128), nullable=True)
+    delete_flag = db.Column(db.Boolean, default=True)
     create_time = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
         return "<Demo>: id={id}, demo={demo}, create_time={time}".format(
             id=self.id, demo=self.demo, time=self.create_time)
+
+
 

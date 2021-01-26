@@ -21,13 +21,3 @@ def errors_handle(error):
 
 if __name__ == '__main__':
     app.run(debug=True, host='localhost', port=5000)
-
-# from flask_script import Manager
-# manager = Manager(app)
-# @manager.command
-# def runserver():
-#     app.run(debug=True, host='localhost', port=5000)
-#
-#
-# if __name__ == "__main__":
-#     manager.run()
