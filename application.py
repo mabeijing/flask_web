@@ -1,13 +1,13 @@
+import logging
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_restful import Api
+from flask_session import Session
+from flask_migrate import Migrate
 
-import logging
+migrate = Migrate()
 
 logging.basicConfig(level=logging.DEBUG)
-
-db = SQLAlchemy()
 
 
 def register_blueprints(app):
@@ -25,10 +25,12 @@ def create_api(app):
 
 
 def create_app():
+    from models import db
     app = Flask(__name__)
     app.config.from_pyfile('config/base_setting.py')
     db.init_app(app)
     register_blueprints(app)
     create_api(app)
+    migrate.init_app(app, db)
     CORS(app)
     return app

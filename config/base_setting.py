@@ -5,13 +5,12 @@ conf = {'user': 'root',
         'password': urlquote('root@123'),
         'host': 'localhost',
         'port': 3306,
-        'database': 'mms_db'}
+        'database': 'flask_web'}
 
 # 支持多数据库配置
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(**conf)
 SQLALCHEMY_BINDS = {
-        'users': '',
-        'address': 'sqlite:///path/to/address.db'
+        'extra': 'sqlite:////Users/mabeijing/flask_web.db'
 }
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -27,5 +26,5 @@ WTF_CSRF_ENABLED = True
 
 
 # 配置celery_redis
-CELERY_BROKER_URL = 'redis://192.168.2.222:6379/0'
-CELERY_RESULT_BACKEND = 'redis://192.168.2.222:6379/0'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

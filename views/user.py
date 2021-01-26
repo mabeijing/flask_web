@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from flask import Blueprint, request, make_response
 from models.User import User as UserModel
+from models.User import Demo
 from flask_wtf.csrf import generate_csrf
 from validate import UserForm
 import logging
@@ -18,6 +19,8 @@ def after_request(response):
 def user_login():
     user = UserModel.query.filter_by(id=1).first()
     print(user)
+    demo = Demo.query.filter_by(id=1).first()
+    print(demo.create_time)
     response = make_response('hello')
     response.set_cookie('csrf_token', generate_csrf())
     return response
