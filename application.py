@@ -1,4 +1,3 @@
-import logging
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
@@ -6,8 +5,6 @@ from flask_session import Session
 from flask_migrate import Migrate
 
 migrate = Migrate()
-
-logging.basicConfig(level=logging.DEBUG)
 
 
 def register_blueprints(app):

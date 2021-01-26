@@ -17,6 +17,9 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 # JSON格式返回支持中文
 JSON_AS_ASCII = False
 
+# JSON返回自动排序，默认True，为了提高缓存性能，不建议修改False
+JSON_SORT_KEYS = False
+
 # WTForm要求CSRF：A secret key
 SECRET_KEY = '123456'
 
