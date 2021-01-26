@@ -19,7 +19,7 @@ class User(db.Model):
 class Demo(db.Model):
     __tablename__ = 'demo'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     demo = db.Column(db.String(128), nullable=True)
     delete_flag = db.Column(db.Boolean, default=True)
     create_time = db.Column(db.DateTime, default=datetime.now)
