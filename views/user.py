@@ -19,8 +19,11 @@ def after_request(response):
 def user_login():
     user = UserModel.query.filter_by(id=1).first()
     print(user)
+    d1 = Demo(demo='哈哈哈', delete_flag=False)
+    d1.save()
     demo = Demo.query.filter_by(id=1).first()
     print(demo.create_time)
+
     response = make_response('hello')
     response.set_cookie('csrf_token', generate_csrf())
     return response

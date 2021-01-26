@@ -28,5 +28,8 @@ class Demo(db.Model):
         return "<Demo>: id={id}, demo={demo}, create_time={time}".format(
             id=self.id, demo=self.demo, time=self.create_time)
 
-
-
+    def save(self):
+        from flask import current_app
+        with current_app.app_context():
+            db.session.add(self)
+            db.session.commit()
