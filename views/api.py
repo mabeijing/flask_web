@@ -7,7 +7,39 @@ class Case(Resource):
     method_decorators = []
 
     def get(self):
-        pass
+        data = request.json
+        return {
+            "list": [
+                {
+                    "id": 1,
+                    "name": "张三三",
+                    "money": 123,
+                    "address": "广东省东莞市长安镇",
+                    "state": "成功",
+                    "date": "2019-11-1",
+                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
+                },
+                {
+                    "id": 2,
+                    "name": "李四",
+                    "money": 456,
+                    "address": "广东省广州市白云区",
+                    "state": "成功",
+                    "date": "2019-10-11",
+                    "thumb": "https://lin-xin.gitee.io/images/post/node3.png"
+                },
+                {
+                    "id": 3,
+                    "name": "王五",
+                    "money": 789,
+                    "address": "湖南省长沙市",
+                    "state": "失败",
+                    "date": "2019-11-11",
+                    "thumb": "https://lin-xin.gitee.io/images/post/parcel.png"
+                }
+            ],
+            "pageTotal": 5
+        }
 
     def post(self):
         pass
@@ -40,8 +72,6 @@ class User(Resource):
 
     def post(self):
         """修改一个user资源"""
-        print(request.json)
-
         json_inputs = JsonInput(request)
         if not json_inputs.validate():
             return {
