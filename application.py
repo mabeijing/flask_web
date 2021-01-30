@@ -15,7 +15,7 @@ def register_blueprints(app):
 
 
 def create_api(app):
-    from views.restful_api import User, Case
+    from views.api import User, Case
     api = Api(app)
     api.add_resource(User, '/api/v1/user')
     api.add_resource(Case, '/api/v1/case')
