@@ -10,16 +10,15 @@ migrate = Migrate()
 def register_blueprints(app):
     from views.user import user
     from views.good import good
-    from views.case import case
     app.register_blueprint(user)
     app.register_blueprint(good)
-    app.register_blueprint(case)
 
 
 def create_api(app):
-    from views.api import User, Case
+    from views.api import User, Demo, Case
     api = Api(app)
     api.add_resource(User, '/api/v1/user')
+    api.add_resource(Demo, '/api/v1/demo')
     api.add_resource(Case, '/api/v1/case')
 
 

@@ -3,6 +3,22 @@ from flask_restful import Resource
 from validate import JsonInput, ParamInput, UserForm
 
 
+class Case(Resource):
+    method_decorators = []
+
+    def get(self):
+        pass
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
+
+
 class User(Resource):
     def get(self):
         """获取资源基本信息"""
@@ -49,83 +65,11 @@ class User(Resource):
         return 'delete'
 
 
-class Case(Resource):
+class Demo(Resource):
     def get(self):
         return {
             "list": [
                 {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },                {
                     "id": 1,
                     "name": "张三三",
                     "money": 123,
