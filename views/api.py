@@ -1,50 +1,68 @@
 from flask import request
 from flask_restful import Resource
-from validate import JsonInput, ParamInput, UserForm
+from validate import JsonInput, ParamInput, UserForm, CaseJsonInputs
+from models.Cases import Case as CaseModel
 
 
 class Case(Resource):
     method_decorators = []
 
     def get(self):
-        data = request.json
-        return {
-            "list": [
-                {
-                    "id": 1,
-                    "name": "张三三",
-                    "money": 123,
-                    "address": "广东省东莞市长安镇",
-                    "state": "成功",
-                    "date": "2019-11-1",
-                    "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
-                },
-                {
-                    "id": 2,
-                    "name": "李四",
-                    "money": 456,
-                    "address": "广东省广州市白云区",
-                    "state": "成功",
-                    "date": "2019-10-11",
-                    "thumb": "https://lin-xin.gitee.io/images/post/node3.png"
-                },
-                {
-                    "id": 3,
-                    "name": "王五",
-                    "money": 789,
-                    "address": "湖南省长沙市",
-                    "state": "失败",
-                    "date": "2019-11-11",
-                    "thumb": "https://lin-xin.gitee.io/images/post/parcel.png"
-                }
-            ],
-            "pageTotal": 5
-        }
+        case = CaseModel()
+        data = case.select_all()
+        return data
+        # return {
+        #     "list": [
+        #         {
+        #             "id": 1,
+        #             "name": "张三三",
+        #             "money": 123,
+        #             "address": "广东省东莞市长安镇",
+        #             "state": "成功",
+        #             "date": "2019-11-1",
+        #             "thumb": "https://lin-xin.gitee.io/images/post/wms.png"
+        #         },
+        #         {
+        #             "id": 2,
+        #             "name": "李四",
+        #             "money": 456,
+        #             "address": "广东省广州市白云区",
+        #             "state": "成功",
+        #             "date": "2019-10-11",
+        #             "thumb": "https://lin-xin.gitee.io/images/post/node3.png"
+        #         },
+        #         {
+        #             "id": 3,
+        #             "name": "王五",
+        #             "money": 789,
+        #             "address": "湖南省长沙市",
+        #             "state": "失败",
+        #             "date": "2019-11-11",
+        #             "thumb": "https://lin-xin.gitee.io/images/post/parcel.png"
+        #         }
+        #     ],
+        #     "pageTotal": 5
+        # }
 
     def post(self):
-        pass
+        data = request.json
+        case_json_inputs = CaseJsonInputs(request)
+        if case_json_inputs.validate():
+            return case_json_inputs.errors
+        param_json = {
+            'SERIAL_NO': data.get('SERIAL_NO'),
+            'LEVEL': data.get('LEVEL'),
+            'DESCRIPTION': data.get('DESCRIPTION'),
+            'REQUEST_METHOD': data.get('REQUEST_METHOD'),
+            'REQUEST_HEADERS': data.get('REQUEST_HEADERS'),
+            'REQUEST_BODY': data.get('REQUEST_BODY')
+        }
+        case = CaseModel(**param_json)
+        case.save()
+        return 'save success'
 
     def put(self):
+
         pass
 
     def delete(self):

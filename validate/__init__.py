@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 from flask_inputs import Inputs
-from ._schema import schema
+from ._schema import schema, case_schema
 from flask_inputs.validators import JsonSchema
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import DataRequired, Length, EqualTo
 
-__all__ = ['JsonInput', 'ParamInput', 'UserForm']
+__all__ = ['JsonInput', 'ParamInput', 'UserForm', 'CaseJsonInputs']
 
 
 class UserForm(FlaskForm):
@@ -26,3 +26,7 @@ class ParamInput(Inputs):
         'user': [DataRequired(message='缺少user参数')],
         'pwd': [DataRequired(message='缺少pwd参数')]
     }
+
+
+class CaseJsonInputs(Inputs):
+    json = [JsonSchema(schema=case_schema)]
