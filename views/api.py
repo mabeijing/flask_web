@@ -8,10 +8,13 @@ class Case(Resource):
     method_decorators = []
 
     def get(self):
-        data = request.args
-        page = data.get('page')
+        data = dict(request.args)
+        print(data)
+        page = int(data.get('pageIndex')) if data.get('pageIndex') else None
+        page_size = int(data.get('pageSize')) if data.get('pageSize') else 10
+        uid = (data.get('id')) if data.get('id') else None
         case = CaseModel()
-        data = case.select_all(int(page))
+        data = case.select_all(**data)
         return data
 
     def post(self):
