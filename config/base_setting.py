@@ -10,7 +10,7 @@ conf = {'user': 'root',
 # 支持多数据库配置
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(**conf)
 SQLALCHEMY_BINDS = {
-        'extra': 'sqlite:////Users/mabeijing/flask_web.db'
+    'extra': 'sqlite:////Users/mabeijing/flask_web.db'
 }
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -27,7 +27,6 @@ SECRET_KEY = '123456'
 # WTF_CSRF_SECRET_KEY = '12435'
 WTF_CSRF_ENABLED = True
 
-
 # 配置celery_redis
 CELERY_BROKER_URL = 'redis://:redis@localhost:6379/3'
-CELERY_RESULT_BACKEN = 'redis://:redis@localhost:6379/4'
+CELERY_RESULT_BACKEND = 'redis://:redis@localhost:6379/4'
