@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import math
 import json
 from datetime import datetime
-from flask import current_app
 from . import db
 
 
@@ -21,9 +19,8 @@ class Case(db.Model):
     DELETE_FLAG = db.Column(db.Boolean, default=False, comment='删除标志')
 
     def save(self):
-        with current_app.app_context():
-            db.session.add(self)
-            db.session.commit()
+        db.session.add(self)
+        db.session.commit()
 
     def select_all(self, **kwargs):
         """
@@ -48,8 +45,7 @@ class Case(db.Model):
         if kwargs.get('level', None) and kwargs.get('level') != '':
             filter_dict['LEVEL'] = kwargs.get('level')
 
-        with current_app.app_context():
-            obj_list = db.session.query(Case).filter_by(**filter_dict).paginate(**paginate_dict)
+        obj_list = db.session.query(Case).filter_by(**filter_dict).paginate(**paginate_dict)
         for case_obj in obj_list.items:
             tmp_dict['ID'] = case_obj.ID
             tmp_dict['SERIAL_NO'] = case_obj.SERIAL_NO
