@@ -29,5 +29,5 @@ WTF_CSRF_ENABLED = True
 
 
 # 配置celery_redis
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://:redis@localhost:6379/3'
+CELERY_RESULT_BACKEN = 'redis://:redis@localhost:6379/4'
