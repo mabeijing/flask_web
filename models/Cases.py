@@ -5,7 +5,7 @@ from . import db, BaseModel
 
 
 class Case(BaseModel):
-    __tablename__ = 'case'
+    __tablename__ = 'tf_b_case'
     SERIAL_NO = db.Column(db.String(128), nullable=False, index=True, comment='用例编号')
     LEVEL = db.Column(db.String(1), nullable=False, comment='用例等级')
     DESCRIPTION = db.Column(db.String(32), nullable=False, comment='用例描述')

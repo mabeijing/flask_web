@@ -10,7 +10,7 @@ conf = {'user': 'root',
 # 支持多数据库配置
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}:{port}/{database}'.format(**conf)
 SQLALCHEMY_BINDS = {
-    'extra': 'sqlite:////Users/mabeijing/flask_web.db'
+    'sqlite_db': 'sqlite:////Users/mabeijing/flask_web.db'
 }
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
