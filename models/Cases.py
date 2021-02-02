@@ -45,7 +45,7 @@ class Case(db.Model):
         if kwargs.get('level', None) and kwargs.get('level') != '':
             filter_dict['LEVEL'] = kwargs.get('level')
 
-        obj_list = db.session.query(Case).filter_by(**filter_dict).paginate(**paginate_dict)
+        obj_list = db.session.query(self.__class__).filter_by(**filter_dict).paginate(**paginate_dict)
         for case_obj in obj_list.items:
             tmp_dict['ID'] = case_obj.ID
             tmp_dict['SERIAL_NO'] = case_obj.SERIAL_NO
