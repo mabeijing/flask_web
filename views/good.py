@@ -1,13 +1,11 @@
 # -*- coding:utf-8 -*-
 from flask import Blueprint
-from sysnc_tasks.sms.tasks import send_template_sms
 
 good = Blueprint('good', __name__, url_prefix='/good')
 
 
 @good.route('/list')
 def good_lists():
-    send_template_sms.delay()
     return 'good_lists'
 
 
