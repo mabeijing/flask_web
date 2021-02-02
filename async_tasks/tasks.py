@@ -1,10 +1,10 @@
-from ..main import app
+import time
+from async_tasks import ext
+app = ext.celery
 
 
-# 定义任务
+# 异步任务
 @app.task
 def send_template_sms():
-    import time
-
     time.sleep(10)
     return 'success'

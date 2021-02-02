@@ -10,8 +10,10 @@ migrate = Migrate()
 def register_blueprints(app):
     from views.user import user
     from views.good import good
+    from views.tasks import task
     app.register_blueprint(user)
     app.register_blueprint(good)
+    app.register_blueprint(task)
 
 
 def create_api(app):
@@ -24,11 +26,14 @@ def create_api(app):
 
 def create_app():
     from models import db
+    from async_tasks import ext
     app = Flask(__name__)
     app.config.from_pyfile('config/base_setting.py')
+    ext.init_app(app)
     db.init_app(app)
     register_blueprints(app)
     create_api(app)
     migrate.init_app(app, db)
+
     CORS(app)
     return app

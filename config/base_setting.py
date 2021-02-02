@@ -28,5 +28,5 @@ SECRET_KEY = '123456'
 WTF_CSRF_ENABLED = True
 
 # 配置celery_redis
-CELERY_BROKER_URL = 'redis://:redis@localhost:6379/3'
-CELERY_RESULT_BACKEND = 'redis://:redis@localhost:6379/4'
+CELERY_BROKER_URL = 'redis://:redis@localhost:6379/5'
+CELERY_RESULT_BACKEND = 'redis://:redis@localhost:6379/6'
