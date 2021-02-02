@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-from . import db
-from datetime import datetime
+from . import db, BaseModel
 
 
-class User(db.Model):
+class User(BaseModel):
     __tablename__ = 'user'
     __bind_key__ = 'extra'
 
-    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255))
     password = db.Column(db.String(255), nullable=False)
     confirm_password = db.Column(db.String(255), nullable=False)
@@ -16,20 +14,3 @@ class User(db.Model):
         return "<user>: id={id}, username={username}".format(id=self.id, username=self.username)
 
 
-class Demo(db.Model):
-    __tablename__ = 'demo'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    demo = db.Column(db.String(128), nullable=True)
-    delete_flag = db.Column(db.Boolean, default=True)
-    create_time = db.Column(db.DateTime, default=datetime.now)
-
-    def __repr__(self):
-        return "<Demo>: id={id}, demo={demo}, create_time={time}".format(
-            id=self.id, demo=self.demo, time=self.create_time)
-
-    def save(self):
-        from flask import current_app
-        with current_app.app_context():
-            db.session.add(self)
-            db.session.commit()

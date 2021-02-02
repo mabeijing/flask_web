@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from flask import Blueprint, request, make_response
-from models.User import User as UserModel
-from models.User import Demo
+from models.User import User
 from flask_wtf.csrf import generate_csrf
 from validate import UserForm
 import logging
@@ -17,9 +16,9 @@ def after_request(response):
 
 @user.route('/login', methods=["GET"])
 def user_login():
-    user = UserModel.query.filter_by(id=1).first()
-    print(user)
-    d1 = Demo(demo='哈哈哈', delete_flag=False)
+    data = User.query.filter_by(id=1).first()
+    print(data)
+    d1 = User(username='mbj', password='123456', confirm_password='123456')
     d1.save()
     demo = Demo.query.filter_by(id=1).first()
     print(demo.create_time)
