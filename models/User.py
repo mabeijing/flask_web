@@ -11,6 +11,12 @@ class User(BaseModel):
     confirm_password = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return "<user>: id={id}, username={username}".format(id=self.id, username=self.username)
+        return "<user>: id={id}, username={username}".format(id=self.ID, username=self.username)
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
+    @staticmethod
+    def query_one(**kwargs):
+        return User.query.filter_by(**kwargs).first()
