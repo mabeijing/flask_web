@@ -1,19 +1,28 @@
 # -*- coding:utf-8 -*-
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, make_response, g
 from models.User import User
 from flask_wtf.csrf import generate_csrf
 from validate import UserForm
 import logging
+import time
 
+logging.root.setLevel(logging.NOTSET)
 logger = logging.getLogger(__name__)
-logger.setLevel('INFO')
+logger.setLevel(logging.DEBUG)
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
 
+@user.before_request
+def before_quest():
+    t = time.time()
+    g.timestamp = t
+
+
 @user.after_request
 def after_request(response):
-    logging.info(response)
+    stamp = time.time() - g.timestamp
+    logger.warning(stamp)
     return response
 
 
