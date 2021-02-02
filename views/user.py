@@ -32,8 +32,8 @@ def user_login():
     user_form = UserForm(req, meta={'csrf': False})
     if not user_form.validate():
         return {'success': False, 'data': user_form.errors}
-    u = User.query_one(username=user_form.username.data)
-    if u and u.password == user_form.password.data:
+    u = User.query_one(username=user_form.USERNAME.data)
+    if u and u.PASSWORD == user_form.PASSWORD.data:
         response = make_response({'success': True, 'data': 'login success!'})
     else:
         response = make_response({'success': False, 'data': '用户名或密码不正确!'})
@@ -50,5 +50,5 @@ def register_member():
     if d:
         return {'success': False, 'data': '用户已存在'}
     User(**user_form.data).save()
-    user_one = User.query_one(username=user_form.username.data)
-    return {'success': True, 'data': {'id': user_one.ID, 'username': user_one.username}}
+    user_one = User.query_one(USERNAME=user_form.USERNAME.data)
+    return {'success': True, 'data': {'id': user_one.ID, 'username': user_one.USERNAME}}

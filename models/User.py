@@ -19,4 +19,5 @@ class User(BaseModel):
 
     @staticmethod
     def query_one(**kwargs):
-        return User.query.filter_by(**kwargs).first()
+        param_dict = {key.upper(): value for key, value in kwargs.items()}
+        return User.query.filter_by(**param_dict).first()
