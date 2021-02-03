@@ -11,9 +11,11 @@ def register_blueprints(app):
     from views.user import user
     from views.good import good
     from views.tasks import task
+    from views.interface import interface
     app.register_blueprint(user)
     app.register_blueprint(good)
     app.register_blueprint(task)
+    app.register_blueprint(interface)
 
 
 def create_api(app):
@@ -34,6 +36,5 @@ def create_app():
     register_blueprints(app)
     create_api(app)
     migrate.init_app(app, db)
-
     CORS(app)
     return app
