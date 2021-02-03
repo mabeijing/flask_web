@@ -1,9 +1,14 @@
 from application import create_app
-from service.chat_room_server import socket_io
-from werkzeug.exceptions import HTTPException
 
 app = create_app()
+
+# socket_io导入必须在app实例化之后
+# 因为在socket_server下导入了异步任务，异步任务必须在app实例化之后才能正确代理
+from service.chat_room_server import socket_io
+
 socket_io.init_app(app, cors_allowed_origins="*")
+
+from werkzeug.exceptions import HTTPException
 
 
 @app.errorhandler(Exception)

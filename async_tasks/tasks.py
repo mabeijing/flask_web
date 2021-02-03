@@ -5,6 +5,7 @@ app = ext.celery
 
 
 # 异步任务
+# 增加bing=True就是绑定到对应的redis数据列表，可以直接读取数据库
 @app.task(bind=True)
 def send_template_sms(self, x, y):
     """接受参数，支持self.request"""
@@ -21,3 +22,16 @@ def socket_bar(self):
         self.update_state(state="PROGRESS", meta={'p': i * 10})
     print(self.request)
     return 'finish'
+
+
+@app.task(bind=True)
+def bar(body):
+    res = body.get('result')
+    if body.get('status') == 'PROGRESS':
+        print('\r任务进度: {0}%'.format(res.get('p')))
+        # 注释方法可以在单挑记录刷新任务进度，print打印多条记录
+        # sys.stdout.write('\r任务进度: {0}%'.format(res.get('p')))
+        # sys.stdout.flush()
+    else:
+        print('\r')
+        print(res)

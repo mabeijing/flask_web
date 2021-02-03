@@ -1,20 +1,31 @@
 from threading import Lock
 from . import socket_io
 from flask import session, request, copy_current_request_context
-from flask_socketio import emit, join_room, leave_room, \
-    close_room, rooms, disconnect
-
-# socket_io = SocketIO()
+from flask_socketio import (emit, join_room, leave_room,
+                            close_room, rooms, disconnect)
+from async_tasks.tasks import socket_bar
 
 thread = None
 thread_lock = Lock()
 
 
+def socket_banner():
+    def bar(body):
+        socket_io.emit('my_response', {'data': '任务进度: {0}%'.format(100), 'count': 1})
+        # print(body)
+        # for i in range(11):
+        #     socket_io.sleep(1)
+        #     socket_io.emit('my_response', {'data': '任务进度: {0}%'.format(body), 'count': i})
+
+    socket_bar.delay().get(on_message=bar, propagate=True)
+
+
 def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
+
     while True:
-        socket_io.sleep(20)
+        socket_io.sleep(10)
         count += 1
         socket_io.emit('my_response', {'data': 'Start background_thread', 'count': count})
 
@@ -24,6 +35,7 @@ def background_thread():
 def echo_event(message):
     print(message)  # {'data': '1111'}
     session['receive_count'] = session.get('receive_count', 0) + 1
+    socket_io.start_background_task(socket_banner)
     emit('my_response', {'data': message['data'], 'count': session['receive_count']})
 
 

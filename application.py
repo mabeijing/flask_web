@@ -29,8 +29,10 @@ def create_api(app):
 def create_app():
     from models import db
     from async_tasks import ext
+    from utils import cache
     app = Flask(__name__)
     app.config.from_pyfile('config/base_setting.py')
+    cache.init_app(app)
     ext.init_app(app)
     db.init_app(app)
     register_blueprints(app)
