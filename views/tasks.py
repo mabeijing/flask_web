@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from flask import Blueprint
+from flask import Blueprint, request
 from celery.result import AsyncResult
 from utils import cache
 from async_tasks.tasks import send_template_sms, socket_bar
@@ -10,7 +10,8 @@ task = Blueprint('task', __name__, url_prefix='/task')
 # 执行异步任务，返回任务id
 @task.route('/execute')
 def execute_task():
-    task_result = send_template_sms.delay(4, 5)
+    args = request.args
+    task_result = send_template_sms.delay(args.get('user'), args.get('pwd'))
     task_id = task_result.id
     return task_id
 
@@ -19,8 +20,7 @@ def execute_task():
 @task.route('/query/<tid>')
 def query_task(tid):
     res = AsyncResult(tid)
-    print(res.result)
-    return 'res.result'
+    return {'result': res.result}
 
 
 # 带进度条的显示

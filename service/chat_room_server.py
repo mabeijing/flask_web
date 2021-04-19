@@ -4,25 +4,34 @@ from flask import session, request, copy_current_request_context
 from flask_socketio import (emit, join_room, leave_room,
                             close_room, rooms, disconnect)
 from async_tasks.tasks import socket_bar
+from celery.result import AsyncResult
+
+count = 1
 
 thread = None
 thread_lock = Lock()
 
 
 def socket_banner():
-    def bar(body):
-        socket_io.emit('my_response', {'data': '任务进度: {0}%'.format(100), 'count': 1})
-        # print(body)
-        # for i in range(11):
-        #     socket_io.sleep(1)
-        #     socket_io.emit('my_response', {'data': '任务进度: {0}%'.format(body), 'count': i})
+    task_result = socket_bar.delay()
+    task_id = task_result.id
+    res = AsyncResult(task_id)
+    while res.status != 'SUCCESS':
+        global count
+        socket_io.sleep(1)
+        if not isinstance(res.result, dict):
+            continue
+        socket_io.emit('my_response', {'data': '任务进度: {0}%'.format(res.result.get('p')), 'count': count})
+        res = AsyncResult(task_id)
+        count = count + 1
 
-    socket_bar.delay().get(on_message=bar, propagate=True)
+    if res.result == 'finish':
+        socket_io.emit('my_response', {'data': f'任务进度: 100%'})
 
 
 def background_thread():
     """Example of how to send server generated events to clients."""
-    count = 0
+    global count
 
     while True:
         socket_io.sleep(10)
@@ -33,8 +42,11 @@ def background_thread():
 # Echo
 @socket_io.event
 def echo_event(message):
-    print(message)  # {'data': '1111'}
     session['receive_count'] = session.get('receive_count', 0) + 1
+    # global thread
+    # with thread_lock:
+    #     if thread is None:
+    #         thread = socket_io.start_background_task(socket_banner)
     socket_io.start_background_task(socket_banner)
     emit('my_response', {'data': message['data'], 'count': session['receive_count']})
 

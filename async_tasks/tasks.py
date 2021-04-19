@@ -10,7 +10,11 @@ app = ext.celery
 def send_template_sms(self, x, y):
     """接受参数，支持self.request"""
     time.sleep(5)
+    print('-' * 40)
     print(self.request)
+    print(dir(self))
+    print(type(self.request))
+    print('-' * 40)
     return x + y
 
 
@@ -25,9 +29,9 @@ def socket_bar(self):
 
 
 @app.task(bind=True)
-def bar(body):
-    res = body.get('result')
-    if body.get('status') == 'PROGRESS':
+def bar(self):
+    res = self.body.get('result')
+    if self.body.get('status') == 'PROGRESS':
         print('\r任务进度: {0}%'.format(res.get('p')))
         # 注释方法可以在单挑记录刷新任务进度，print打印多条记录
         # sys.stdout.write('\r任务进度: {0}%'.format(res.get('p')))
