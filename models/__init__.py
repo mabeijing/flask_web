@@ -11,3 +11,5 @@ class BaseModel(db.Model):
     UPDATE_TIME = db.Column(db.DateTime, default=datetime.now, comment='更新时间')
     DELETE_FLAG = db.Column(db.Boolean, default=False, comment='删除标志')
 
+
+__all__ = [db, BaseModel]

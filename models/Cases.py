@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from . import db, BaseModel
+from . import *
 
 
 class Case(BaseModel):
